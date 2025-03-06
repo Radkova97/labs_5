@@ -1,54 +1,72 @@
 package tests;
+
+import org.junit.Test;
+import phones.*;
+
 import java.awt.Color;
 import java.util.List;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-import phones.FindPhone;
-import phones.Phone;
-
 public class FindPhoneTest {
-    
-    public FindPhoneTest() {}
+
+    private final FindPhone findPhone = new FindPhone();
 
     @Test
     public void byColorTest() {
-        FindPhone fph=new FindPhone();
-        List<Phone> find=fph.byColor(Color.RED);
-        
-        assertEquals(3, find.size());
+        List<Tag> criteria = new ArrayList<>();
+        criteria.add(new ColorTag(Color.RED));
+
+        List<Phone> result = findPhone.findByCriteria(criteria);
+        assertEquals(3, result.size()); // Проверяем, что найдено 3 телефона красного цвета
     }
-    
     @Test
     public void byModelTest() {
-        FindPhone fph=new FindPhone();
-        List<Phone> find=fph.byModel("vokii");
-        
-        assertEquals(4, find.size());
+        List<Tag> criteria = new ArrayList<>();
+        criteria.add(new ModelTag("vokii"));
+
+        List<Phone> result = findPhone.findByCriteria(criteria);
+        assertEquals(4, result.size()); // Проверяем, что найдено 4 телефона модели "vokii"
     }
-    
     @Test
-    public void byMSizeTest() {
-        FindPhone fph=new FindPhone();
-        List<Phone> find=fph.byMSize(64);
-        
-        assertEquals(2, find.size());
+    public void byMemorySizeTest() {
+        List<Tag> criteria = new ArrayList<>();
+        criteria.add(new Tag() {
+            @Override
+            public boolean find(Phone ph) {
+                return ph.getMemorySize() == 64;
+            }
+        });
+
+        List<Phone> result = findPhone.findByCriteria(criteria);
+        assertEquals(2, result.size()); // Проверяем, что найдено 2 телефона с памятью 64 ГБ
     }
-    
     @Test
     public void byModelAndPriceLowTest() {
-        FindPhone fph=new FindPhone();
-        List<Phone> find=fph.byModelAndPriceLow("vokii",13000);
-        
-        assertEquals(2, find.size());
+        List<Tag> criteria = new ArrayList<>();
+        criteria.add(new ModelTag("vokii"));
+        criteria.add(new PriceTag(13000));
+
+        List<Phone> result = findPhone.findByCriteria(criteria);
+        assertEquals(2, result.size()); // Проверяем, что найдено 2 телефона "vokii" дешевле 13000
     }
-    
     @Test
-    public void byMSizeAndNotColorTest() {
-        FindPhone fph=new FindPhone();
-        List<Phone> find=fph.byMSizeAndNotColor(8,Color.RED);
-        
-        assertEquals(3, find.size());
+    public void byMemorySizeAndNotColorTest() {
+        List<Tag> criteria = new ArrayList<>();
+        criteria.add(new Tag() {
+            @Override
+            public boolean find(Phone ph) {
+                return ph.getMemorySize() == 8 && ph.getColor() != Color.RED;
+            }
+        });
+
+        List<Phone> result = findPhone.findByCriteria(criteria);
+        assertEquals(3, result.size()); // Проверяем, что найдено 3 телефона с 8 ГБ памяти, но не красного цвета
+    }
+    @Test
+    public void byModelAndPriceLowAndColorTest() {
+        List<Phone> result = findPhone.byModelAndPriceLowAndColor("nokii", 12500, Color.WHITE);
+        assertEquals(1, result.size()); // Проверяем, что найден 1 телефон "nokii", дешевле 12500, белого цвета
     }
 }
