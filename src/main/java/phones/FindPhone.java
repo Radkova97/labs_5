@@ -1,44 +1,34 @@
 package phones;
+
 import java.awt.Color;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FindPhone {
-    private List<Phone> data=new PhoneDB().getPhoneData();
-    
-    public List<Phone> byColor(Color col) {
-        List<Phone> find=new LinkedList<>();
-        for(Phone ph : data)
-            if (ph.getColor()==col)   find.add(ph);
-        return find;
+    private List<Phone> data = new PhoneDB().getPhoneData();
+
+    public List<Phone> findByCriteria(List<Tag> criteria) {
+        List<Phone> result = new ArrayList<>();
+        for (Phone ph : data) {
+            boolean matches = true;
+            for (Tag tag : criteria) {
+                if (!tag.find(ph)) {
+                    matches = false;
+                    break;
+                }
+            }
+            if (matches) {
+                result.add(ph);
+            }
+        }
+        return result;
     }
-    
-    public List<Phone> byModel(String mod) {
-        List<Phone> find=new LinkedList<>();
-        for(Phone ph : data)
-            if (ph.getModel().equalsIgnoreCase(mod))   find.add(ph);
-        return find;
+
+    public List<Phone> byModelAndPriceLowAndColor(String mod, double price, Color color) {
+        List<Tag> criteria = new ArrayList<>();
+        criteria.add(new ModelTag(mod));
+        criteria.add(new PriceTag(price));
+        criteria.add(new ColorTag(color));
+        return findByCriteria(criteria);
     }
-    
-    public List<Phone> byMSize(int memSize) {
-        List<Phone> find=new LinkedList<>();
-        for(Phone ph : data)
-            if (ph.getMemorySize()==memSize)   find.add(ph);
-        return find;
-    }
-    
-    public List<Phone> byModelAndPriceLow(String mod, double price) {
-        List<Phone> find=new LinkedList<>();
-        for(Phone ph : data)
-            if (ph.getModel().equalsIgnoreCase(mod) &&
-                                ph.getPrice()<price)   find.add(ph);
-        return find;
-    }
-    
-    public List<Phone> byMSizeAndNotColor(int memSize, Color col) {
-        List<Phone> find=new LinkedList<>();
-        for(Phone ph : data)
-            if (ph.getMemorySize()==memSize && !(ph.getColor()==col))   find.add(ph);
-        return find;
-    }    
 }
